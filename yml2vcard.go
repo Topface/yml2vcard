@@ -37,6 +37,7 @@ func main() {
 	emps, err := parseEmployeesYml(*employeesfile)
 	if err != nil {
 		log.Println(err)
+		return
 	}
 	for _, emp := range emps {
 		fmt.Print(vcardify(emp, *org, *prefix, *suffix))
@@ -48,12 +49,12 @@ func parseEmployeesYml(file string) ([]Employee, error) {
 
 	var contents, err = ioutil.ReadFile(file)
 	if err != nil {
-		return emps, fmt.Errorf("error reading file: %v", err)
+		return emps, err
 	}
 
 	err = yaml.Unmarshal(contents, &emps)
 	if err != nil {
-		return emps, fmt.Errorf("Umarshal() error: %v", err)
+		return emps, err
 	}
 
 	return emps, nil
@@ -67,7 +68,7 @@ func vcardify(emp Employee, org, prefix, suffix string) string {
 	buf.WriteString(fmt.Sprintf(
 		"REV:%s\n", time.Now().UTC().Format("2006-01-02T15:04:05Z")))
 
-	buf.WriteString("PRODID:-//Topface//yml2vcard//RU\n")
+	buf.WriteString("PRODID:-//Topface//yml2vcard//EN\n")
 
 	names := strings.Split(emp.Name, " ")
 	var firstname, lastname string
